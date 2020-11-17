@@ -1,6 +1,6 @@
 import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
 
-import { mapStory } from './stories.js';
+import { mapStory } from './stories.ts';
 
 // To test run deno test for all tests or deno test stories.test.js for just this test
 
