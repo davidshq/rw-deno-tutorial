@@ -1,19 +1,23 @@
-import { Application, Context } from 'https://deno.land/x/oak/mod.ts';
+import { Application, Router } from 'https://deno.land/x/oak/mod.ts';
 
 const port = 8000;
 const app = new Application();
 
-const logging = async (ctx: Context, next: Function) => {
-    console.log(`HTTP ${ctx.request.method} on ${ctx.request.url}`);
-    await next();
-}
+const router = new Router();
 
-app.use(logging);
+router
+    .get('/', (ctx) => {
+        ctx.response.body = 'Hello Deno';
+    })
+    .get('/1', (ctx) => {
+        ctx.response.body = 'Hello Deno 1';
+    })
+    .get('/2', (ctx) => {
+        ctx.response.body = "Hello Deno 2";
+    })
 
-app.use((ctx) => {
-    console.log('returning a response ...')
-    ctx.response.body = 'Hello Deno';
-});
+app.use(router.routes());
+app.use(router.allowedMethods());
 
 app.addEventListener('listen', () => {
     console.log(`Listening on localhost:${port}`);
