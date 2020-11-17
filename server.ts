@@ -3,23 +3,26 @@ import { Application, Router } from 'https://deno.land/x/oak/mod.ts';
 const port = 8000;
 const app = new Application();
 
-const routerOne = new Router();
+const router = new Router();
 
-routerOne.get('/1', (ctx) => {
-    ctx.response.body = 'Hello Deno 1';
-})
-
-const routerTwo = new Router();
-
-routerTwo.get('/2', (ctx) => {
-    ctx.response.body = 'Hello Deno 2';
+router.get('/', (ctx) => {
+    ctx.response.body = 'Received a GET HTTP method';
 });
 
-app.use(routerOne.routes());
-app.use(routerOne.allowedMethods());
+router.post('/', (ctx) => {
+    ctx.response.body = 'Received a POST HTTP method';
+});
 
-app.use(routerTwo.routes());
-app.use(routerTwo.allowedMethods());
+router.put('/', (ctx) => {
+    ctx.response.body = 'Received a PUT HTTP method';
+});
+
+router.delete('/', (ctx) => {
+    ctx.response.body = 'Received a DELETE HTTP method';
+});
+
+app.use(router.allowedMethods());
+app.use(router.routes());
 
 app.addEventListener('listen', () => {
     console.log(`Listening on localhost:${port}`);
