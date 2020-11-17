@@ -1,24 +1,67 @@
-import { Application, Router } from 'https://deno.land/x/oak/mod.ts';
+import { 
+    Application, 
+    Router,
+    helpers
+} from 'https://deno.land/x/oak/mod.ts';
 
 const port = 8000;
 const app = new Application();
 
+interface User {
+    id: string;
+    username: string;
+}
+
+const users = new Map<string, User>();
+
+users.set('1', {
+    id: '1',
+    username: 'Robin Wieruch',
+});
+
+users.set('2', {
+    id: '2',
+    username: 'Dave Davids',
+});
+
+interface Message {
+    id: string;
+    text: string;
+    userId: string;
+}
+
+const messages = new Map<string, Message>();
+
+messages.set('1', {
+    id: '1',
+    text: 'Hello World',
+    userId: '1',
+});
+
+messages.set('2', {
+    id: '2',
+    text: 'Bye World',
+    userId: '2',
+});
+
 const router = new Router();
 
-router.get('/', (ctx) => {
-    ctx.response.body = 'Received a GET HTTP method';
+router.get('/users', (ctx) => {
+    ctx.response.body = Array.from(users.values());
 });
 
-router.post('/', (ctx) => {
-    ctx.response.body = 'Received a POST HTTP method';
+router.get('/users/:userId', (ctx) => {
+    const { userId } = helpers.getQuery(ctx, { mergeParams: true });
+    ctx.response.body = users.get(userId);
 });
 
-router.put('/', (ctx) => {
-    ctx.response.body = 'Received a PUT HTTP method';
+router.get('/messages', (ctx) => {
+    ctx.response.body = Array.from(messages.values());
 });
 
-router.delete('/', (ctx) => {
-    ctx.response.body = 'Received a DELETE HTTP method';
+router.get('/messages/:messageId', (ctx) => {
+    const { messageId } = helpers.getQuery(ctx, { mergeParams: true });
+    ctx.response.body = messages.get(messageId);
 });
 
 app.use(router.allowedMethods());
