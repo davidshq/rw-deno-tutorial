@@ -4,6 +4,8 @@ import {
     helpers
 } from 'https://deno.land/x/oak/mod.ts';
 
+import { v4 } from 'https://deno.land/std/uuid/mod.ts';
+
 const port = 8000;
 const app = new Application();
 
@@ -62,6 +64,39 @@ router.get('/messages', (ctx) => {
 router.get('/messages/:messageId', (ctx) => {
     const { messageId } = helpers.getQuery(ctx, { mergeParams: true });
     ctx.response.body = messages.get(messageId);
+});
+
+router.post('/messages', async (ctx) => {
+    const id = v4.generate();
+
+    const { value } = ctx.request.body({ type: 'json' });
+    const { text } = await value;
+
+    messages.set(id, {
+        id,
+        text,
+        userId: ctx.state.me.id,
+    });
+
+    ctx.response.body = messages.get(id);
+});
+
+router.delete('/messages/:messageId', async(ctx) => {
+    const { messageId } = helpers.getQuery(ctx, { mergeParams: true });
+
+    const isDeleted = messages.delete(messageId);
+
+    ctx.response.body = isDeleted;
+});
+
+router.get('/session', (ctx) => {
+    ctx.response.body = users.get(ctx.state.me.id);
+});
+
+app.use(async (ctx, next) => {
+    ctx.state = {me: users.get('1')};
+
+    await next();
 });
 
 app.use(router.allowedMethods());
